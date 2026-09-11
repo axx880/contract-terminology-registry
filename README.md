@@ -2,7 +2,7 @@
 
 Central source of truth for terminology, MachineName, Russian display names, naming rules, and migration history across the project ecosystem.
 
-Current registry version: **0.1.0**
+Current registry version: **0.2.0**
 
 ## Canonical machine-readable source
 - `data/terms.json`
@@ -13,7 +13,7 @@ Current registry version: **0.1.0**
 Schemas are stored in `schema/`.
 
 ## User view
-`exports/Contract_Terminology_Dictionary_v0.1.0.xlsx` is generated from the same canonical registry content and is not an independent source of truth.
+`exports/Contract_Terminology_Dictionary_v0.2.0.xlsx` is generated from the same canonical registry content and is not an independent source of truth.
 
 ## Versioning
 - `RegistryVersion` uses semantic versioning.
