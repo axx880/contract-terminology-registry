@@ -22,6 +22,8 @@ jobs:
       - name: Rebuild staged Excel export
         shell: bash
         run: |
+          wc -c .tmp/v03_00.b64 .tmp/v03_01.b64 .tmp/v03_0203.b64
+          sha256sum .tmp/v03_00.b64 .tmp/v03_01.b64 .tmp/v03_0203.b64
           cat .tmp/v03_00.b64 .tmp/v03_01.b64 .tmp/v03_0203.b64 | base64 --decode > exports/Contract_Terminology_Dictionary_v0.3.0.xlsx
       - name: Validate canonical payloads and Excel export
         shell: bash
