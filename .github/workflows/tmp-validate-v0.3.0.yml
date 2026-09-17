@@ -4,17 +4,26 @@ on:
     branches: [feature/object-reference-tmc-v0.3.0]
   workflow_dispatch:
 
-# Temporary validation workflow for registry v0.3.0 release gate.
+permissions:
+  contents: write
+
+# Temporary release-gate workflow. It reconstructs the intended XLSX from
+# staged Base64 chunks, validates canonical payloads and workbook contents,
+# then commits the validated binary back to the feature branch.
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Rebuild staged Excel export
+        shell: bash
+        run: |
+          cat .tmp/v03_00.b64 .tmp/v03_01.b64 .tmp/v03_0203.b64 | base64 --decode > exports/Contract_Terminology_Dictionary_v0.3.0.xlsx
       - name: Validate canonical payloads and Excel export
         shell: bash
         run: |
           python - <<'PY'
-          import hashlib, json, os, re, sys, zipfile
+          import hashlib, json, zipfile
           import xml.etree.ElementTree as ET
 
           version='0.3.0'
@@ -91,3 +100,15 @@ jobs:
             assert len(names)==len(set(names))==4
           print('REGISTRY_EXPORT_VALIDATION PASS')
           PY
+      - name: Commit validated Excel export
+        shell: bash
+        run: |
+          if git diff --quiet -- exports/Contract_Terminology_Dictionary_v0.3.0.xlsx; then
+            echo "Validated export already matches branch."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add exports/Contract_Terminology_Dictionary_v0.3.0.xlsx
+          git commit -m "Fix validated registry v0.3.0 Excel export"
+          git push
