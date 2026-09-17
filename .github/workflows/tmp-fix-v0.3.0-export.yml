@@ -1,0 +1,50 @@
+name: tmp fix registry v0.3.0 export
+on:
+  push:
+    branches: [feature/object-reference-tmc-v0.3.0]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/object-reference-tmc-v0.3.0
+      - name: Reconstruct exact validated export
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(wc -c < .tmp/v03_00.b64)" = "10620"
+          test "$(wc -c < .tmp/v03_01.b64)" = "10620"
+          test "$(wc -c < .tmp/v03_02a.b64)" = "5310"
+          test "$(wc -c < .tmp/v03_02b.b64)" = "5310"
+          test "$(sha256sum .tmp/v03_00.b64 | cut -d' ' -f1)" = "7fa44358a21ec2e6a416ad9b44187f0367b188da1fb0b26765a7887c1d6bc7c7"
+          test "$(sha256sum .tmp/v03_01.b64 | cut -d' ' -f1)" = "cc143dea16358c2940d2df8b204efba4357884c1b9fbae82f1d3b0dae307e4d3"
+          test "$(sha256sum .tmp/v03_02a.b64 | cut -d' ' -f1)" = "6e5cd13224670b30eecc8271ff5b5fadd52621138feb525b3825e3741c2adbd1"
+          test "$(sha256sum .tmp/v03_02b.b64 | cut -d' ' -f1)" = "8ddb4e8e60ea44e124a3574630707e1d195439d3348c5fad76bf8835dfe399e7"
+          cat .tmp/v03_00.b64 .tmp/v03_01.b64 .tmp/v03_02a.b64 .tmp/v03_02b.b64 | base64 --decode > exports/Contract_Terminology_Dictionary_v0.3.0.xlsx
+          test "$(wc -c < exports/Contract_Terminology_Dictionary_v0.3.0.xlsx)" = "23894"
+          test "$(sha256sum exports/Contract_Terminology_Dictionary_v0.3.0.xlsx | cut -d' ' -f1)" = "6bee2ed53a868f60a9cfb3e646d66637e80df3e24a7dc9ca9f9e14610ae797d2"
+          python - <<'PY'
+          import zipfile
+          p='exports/Contract_Terminology_Dictionary_v0.3.0.xlsx'
+          with zipfile.ZipFile(p) as z:
+              assert z.testzip() is None
+          print('EXACT_EXPORT_REPAIR PASS')
+          PY
+      - name: Commit repaired export
+        shell: bash
+        run: |
+          if git diff --quiet -- exports/Contract_Terminology_Dictionary_v0.3.0.xlsx; then
+            echo "Exact export already present."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add exports/Contract_Terminology_Dictionary_v0.3.0.xlsx
+          git commit -m "Fix validated registry v0.3.0 Excel export"
+          git push origin HEAD:feature/object-reference-tmc-v0.3.0
