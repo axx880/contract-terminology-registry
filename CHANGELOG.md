@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.3.0 — 2026-09-16
+
+Object Reference TMC Registry / Checkpoint B terminology gate.
+
+### Changed
+- `Article` scope widened to include `OBJECT_REFERENCE`;
+- `Unit` scope widened to include `OBJECT_REFERENCE`;
+- `Manufacturer` scope widened to include `OBJECT_REFERENCE`;
+- all canonical registry payloads are versioned as `0.3.0`.
+
+### Compatibility
+- no MachineName was added, renamed or removed;
+- the change is additive for consumers pinned to registry `0.2.0`;
+- `TMCID`, `ObjectID`, `Section` and `CanonicalItemName` keep their existing semantics;
+- scope widening authorizes the Stage 3 `DCT_ORD_TMC` contract in `axx880/object-reference-data` without changing existing consumers.
+
+### Release gate
+- canonical JSON changes are prepared;
+- user-readable Excel export `Contract_Terminology_Dictionary_v0.3.0.xlsx` must be regenerated and validated before this release is merged as `VALID`.
+
 ## 0.2.0 — 2026-09-11
 
 Stage 1 terminology gate for `axx880/object-reference-data`.
