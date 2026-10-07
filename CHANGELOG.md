@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.4.0 — 2026-10-07
+
+Object Reference Stage 4 Publish/Exchange terminology gate.
+
+### Added
+- `CurrentTMCID` (`TERM-0067`) — shared current TMC identifier resolved by the Object Reference owner after confirmed merge/alias decisions.
+- `REF_STAGE4` evidence source for the Stage 4 provider/consumer architecture.
+
+### Changed
+- all canonical registry payloads are versioned as `0.4.0`.
+
+### Compatibility
+- additive release: no active MachineName is renamed or removed;
+- existing `TMCID` semantics remain unchanged as the immutable issued identifier;
+- `CurrentTMCID` is the downstream relationship/grouping identifier; when no redirect exists it equals `TMCID`;
+- consumers pinned to 0.3.0 remain valid until they explicitly adopt the Stage 4 resolved contract.
+
+### Release gate
+- canonical JSON must pass schema/custom validation;
+- `exports/Contract_Terminology_Dictionary_v0.4.0.xlsx` must be regenerated and synchronized before VALID merge.
+
 ## 0.3.0 — 2026-09-16
 
 Object Reference TMC Registry / Checkpoint B terminology gate.
